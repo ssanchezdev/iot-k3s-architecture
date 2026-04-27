@@ -1,0 +1,14 @@
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/.terraform.lock.hcl
+
+# Python / FastAPI / Locust
+**/__pycache__/
+**/*.pyc
+.env
+
+# OS / Editor
+.vscode/
+.DS_Store

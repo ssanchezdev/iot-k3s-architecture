@@ -1,0 +1,37 @@
+---
+- name: Configurar Hostnames
+  hosts: all
+  become: yes
+  tasks:
+    - name: Cambiar el nombre interno de la maquina
+      hostname:
+        name: "{{inventory_hostname}}"
+
+- name: Configurar Cerebro (Master)
+  hosts: master
+  become: yes
+  tasks:
+    - name: Instalar K3s (Control Panel)
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+    
+    - name: Extraer el token Secreto del Master
+      command: cat /var/lib/rancher/k3s/server/node-token
+      register: master_token
+
+    - name: Guardar el token en memoria para usarlo después
+      set_fact:
+        k3s_token: "{{master_token.stdout}}"
+
+- name: Configurar Workers
+  hosts: workers
+  become: yes
+  tasks:
+    - name: Instalar K3s Agent y unir al Master
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        K3S_URL: "https://192.168.1.19:6443"
+        K3S_TOKEN: "{{ hostvars['k3s-master']['k3s_token'] }}"
+      args:
+        creates: /usr/local/bin/k3s-agent
