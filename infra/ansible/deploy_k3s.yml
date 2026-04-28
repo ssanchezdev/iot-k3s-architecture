@@ -31,7 +31,7 @@
     - name: Instalar K3s Agent y unir al Master
       shell: curl -sfL https://get.k3s.io | sh -
       environment:
-        K3S_URL: "https://192.168.1.19:6443"
+        K3S_URL: "https://192.168.1.19:6443" # Cambiar IP -> IP de tu maquina virtual (master):6443
         K3S_TOKEN: "{{ hostvars['k3s-master']['k3s_token'] }}"
       args:
         creates: /usr/local/bin/k3s-agent
